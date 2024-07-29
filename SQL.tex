@@ -1,0 +1,125 @@
+CREATE DATABASE JakMik
+Go
+
+USE JakMik;
+
+CREATE TABLE Drivers (
+	Pesel CHAR(11) PRIMARY KEY,
+	Name VARCHAR(64),
+	Surname VARCHAR(64),
+	EMail VARCHAR(64),
+	PhoneNumber CHAR(9)
+	)
+
+CREATE TABLE BusVariants (
+	ID INT IDENTITY(1,1),
+	Make VARCHAR(96),
+	Model VARCHAR(164),
+	ProdYear INT,
+	PRIMARY KEY(ID)
+	)
+
+CREATE TABLE Buses (
+	VIN CHAR(19) PRIMARY KEY,
+	Registration VARCHAR(11),
+	DepotNumber CHAR(5),
+	BusVariantID INT,
+	FOREIGN KEY (BusVariantID) REFERENCES BusVariants
+	)
+
+CREATE TABLE Repairs(
+	ID INT IDENTITY(1,1),
+	DateStart DATETIME,
+	DateEnd DATETIME,
+	TotalPrice FLOAT,
+	BusVIN CHAR(19),
+	PRIMARY KEY (ID),
+	FOREIGN KEY (BusVIN) REFERENCES Buses
+	)
+
+CREATE TABLE Services (
+	ID INT IDENTITY(1,1) PRIMARY KEY,
+	Name VARCHAR(128),
+	Description TEXT
+	)
+
+CREATE TABLE Courses (
+	ID INT IDENTITY(1,1),
+	Number CHAR(3),
+	Name VARCHAR(92),
+	Failure VARCHAR(5),
+	DriverPesel CHAR(11),
+	BusVin CHAR(19),
+	Continuity VARCHAR(5),
+	PRIMARY KEY (ID),
+	FOREIGN KEY (DriverPesel) REFERENCES Drivers,
+	FOREIGN KEY (BusVin) REFERENCES Buses
+	)
+
+
+CREATE TABLE Stations (
+	ID INT IDENTITY(1,1),
+	Name VARCHAR(64)
+	PRIMARY KEY(ID)
+	)
+	
+
+CREATE TABLE Stops (
+	CourseID INT,
+	StationID INT
+	PRIMARY KEY (CourseID, StationID),
+	FOREIGN KEY (CourseID) REFERENCES Courses,
+	FOREIGN KEY (StationID) REFERENCES Stations
+	)
+
+CREATE Table Usages (
+	RepairID INT,
+	ServiceID INT,
+	PRIMARY KEY (RepairID, ServiceID),
+	FOREIGN KEY (RepairID) REFERENCES Repairs,
+	FOREIGN KEY (ServiceID) REFERENCES Services)
+
+
+BULK INSERT Drivers
+from 'YOURDIRECTORY\drivers_gen.bulk' 
+with (fieldterminator = '|',rowterminator = '\n')
+
+
+BULK INSERT BusVariants
+from 'YOURDIRECTORY\variants.bulk' 
+with (fieldterminator = '|',rowterminator = '\n')
+
+
+BULK INSERT Buses
+from 'YOURDIRECTORY\buses_gen.bulk' 
+with (fieldterminator = '|',rowterminator = '\n')
+
+
+BULK INSERT Repairs
+from 'YOURDIRECTORY\repairs_gen.bulk' 
+with (fieldterminator = '|',rowterminator = '\n')
+
+
+BULK INSERT Services
+from 'YOURDIRECTORY\services_gen.bulk' 
+with (fieldterminator = '|',rowterminator = '\n')
+
+
+BULK INSERT Courses 
+from 'YOURDIRECTORY\courses_gen.bulk' 
+with (fieldterminator = '|',rowterminator = '\n')
+
+
+BULK INSERT Stations
+from 'YOURDIRECTORY\stations_gen.bulk'
+with (fieldterminator = '|',rowterminator = '\n')
+
+
+BULK INSERT Stops
+from 'YOURDIRECTORY\stops_gen.bulk' 
+with (fieldterminator = '|',rowterminator = '\n')
+
+BULK INSERT Usages
+from 'YOURDIRECTORY\usages_gen.bulk' 
+with (fieldterminator = '|',rowterminator = '\n');
+
